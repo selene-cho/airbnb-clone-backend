@@ -129,21 +129,21 @@ class JWTLogIn(APIView):
 class GithubLogIn(APIView):
     def post(self, request):
         try:
-            code = request.data.get("code")
-            access_token = requests.post(
-                f"https://github.com/login/oauth/access_token?code={code}&client_id=edcf66f77540403846ca&client_secret={settings.GH_SECRET}",
+            code = request.data.get("code")  # 프론트에서 보내준 code 받음
+            access_token = requests.post(   # github API로 code를 access token으로 바꿔줌
+                f"https://github.com/login/oauth/access_token?code={code}&client_id=edcf66f77540403846ca&client_secret={settings.GH_SECRET}",   # user가 준 code, github에 등록한 client_id, github 페이지에 있는 client secret도 같이 보내야함
                 headers={"Accept": "application/json"},
             )
-            access_token = access_token.json().get("access_token")
-            user_data = requests.get(
+            access_token = access_token.json().get("access_token")   # github으로 요청 보내면 access_token을 받음
+            user_data = requests.get(   # 우리가 user인 것처럼 github API에게 user에 대한 정보 받을 수 있음
                 "https://api.github.com/user",
                 headers={
                     "Authorization": f"Bearer {access_token}",
                     "Accept": "application/json",
                 },
-            )
+            )  # user_data 받음
             user_data = user_data.json()
-            user_emails = requests.get(
+            user_emails = requests.get(   # email은 암호화 되어 있기 때문에 요청 또 보내야함
                 "https://api.github.com/user/emails",
                 headers={
                     "Authorization": f"Bearer {access_token}",
@@ -151,20 +151,21 @@ class GithubLogIn(APIView):
                 },
             )
             user_emails = user_emails.json()
-            try:
+            try:  # 이메일을 가진 user를 database에서 찾으면 user는 github을 통해 로그인 한다는 뜻
                 user = User.objects.get(email=user_emails[0]["email"])
-                login(request, user)
+                login(request, user)  # 같은 email이 있다면 로그인 시켜주면 됨
                 return Response(status=status.HTTP_200_OK)
-            except User.DoesNotExist:
-                user = User.objects.create(
+            except User.DoesNotExist:  # 같은 email을 가진 user가 없다면
+                user = User.objects.create(  # 새로운 User 생성 , 정보 아래에서 가져옴
                     username=user_data.get("login"),
                     email=user_emails[0]["email"],
                     name=user_data.get("name"),
                     avatar=user_data.get("avatar_url"),
                 )
-                user.set_unusable_password()
-                user.save()
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
+                user.set_unusable_password()  # 이 user는 비밀번호 없는 user -> 그냥 로그인 하려고 하면 비밀번호 없다고 sns 로그인해! 알려줌
+                user.save()  # user 저장
+                login(request, user)  # 그후 로그인시켜줌 login 함수 호출할때 이 함수가 모든 걸 다 처리해 줌
+                # 백엔드에서 세션 만들어줌, user한테 cookie 줌 ... 다 해줌
+                return Response(status=status.HTTP_200_OK) # status success 해주고 프론트엔드로 GO!
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
