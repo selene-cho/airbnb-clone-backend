@@ -169,4 +169,8 @@ REST_FRAMEWORK = {
     ]
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3001"] # 이 주소만 fetch 할 수 있도록 설정
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3001"]  # 이 domain으로 fetch해 달라고 요청해야함
+
+CORS_ALLOW_CREDENTIALS = True  # javascript를 통해서 credential 받겠다고 허락
+
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3001"] 
