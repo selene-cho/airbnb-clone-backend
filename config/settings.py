@@ -173,4 +173,6 @@ CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3001"]  # 이 domain으로 fetch해 �
 
 CORS_ALLOW_CREDENTIALS = True  # javascript를 통해서 credential 받겠다고 허락
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3001"] 
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3001"]
+
+GH_SECRET = env("GH_SECRET")
