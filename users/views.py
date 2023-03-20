@@ -159,8 +159,8 @@ class GithubLogIn(APIView):
                 user = User.objects.create(
                     username=user_data.get("login"),
                     email=user_emails[0]["email"],
-                    # nickname=user_data.get("name"),
-                    # img=user_data.get("avatar_url"),
+                    name=user_data.get("name"),
+                    avatar=user_data.get("avatar_url"),
                 )
                 user.set_unusable_password()
                 user.save()
