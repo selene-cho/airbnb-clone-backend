@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
-from .views import Me, Users, PublicUser, ChangePassword, LogIn, LogOut, JWTLogIn, GithubLogIn
+from .views import Me, Users, PublicUser, ChangePassword, LogIn, LogOut, JWTLogIn, GithubLogIn, KakaoLogIn
 
 
 urlpatterns = [
@@ -12,5 +12,6 @@ urlpatterns = [
     path("token-login", obtain_auth_token),
     path("jwt-login", JWTLogIn.as_view()),
     path("github", GithubLogIn.as_view()),
+    path("kakao", KakaoLogIn.as_view()),
     path("@<str:username>", PublicUser.as_view()),
 ]
